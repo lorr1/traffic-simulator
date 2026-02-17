@@ -1,0 +1,5 @@
+Look at claude_plan/. Implement the second commit. MAke sure prior work is where it should be.
+
+---
+
+Yes
