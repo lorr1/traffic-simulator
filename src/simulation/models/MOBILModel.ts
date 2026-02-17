@@ -20,11 +20,19 @@ export interface LaneChangeDecision {
  * Returns the best lane change (highest gain) that passes both criteria,
  * or { shouldChange: false } if none qualifies.
  */
+export interface LaneChangeOptions {
+  blockedLanes?: Set<number>;
+  incidentAhead?: boolean;
+}
+
+const INCIDENT_ESCAPE_BONUS = 5.0; // m/s² bonus for escaping a blocked lane
+
 export function evaluateLaneChange(
   vehicle: Vehicle,
   currentLeader: Vehicle | null,
   road: Road,
   params: SimulationParams,
+  options: LaneChangeOptions = {},
 ): LaneChangeDecision {
   const currentAccel = computeAcceleration(vehicle, currentLeader, params);
 
@@ -35,6 +43,9 @@ export function evaluateLaneChange(
 
   for (const targetLane of candidates) {
     if (targetLane < 0 || targetLane >= road.lanes.length) continue;
+
+    // Prevent lane changes INTO a blocked lane
+    if (options.blockedLanes?.has(targetLane)) continue;
 
     const { leader: newLeader, follower: newFollower } = road.getNeighbors(
       vehicle,
@@ -69,11 +80,16 @@ export function evaluateLaneChange(
       );
     }
 
-    const gain =
+    let gain =
       newAccel -
       currentAccel -
       params.politenessFactor *
         (newFollowerAccelBefore - newFollowerAccelAfter);
+
+    // Bias: if current lane is blocked ahead, add bonus to escape
+    if (options.incidentAhead) {
+      gain += INCIDENT_ESCAPE_BONUS;
+    }
 
     if (gain > params.changingThreshold && gain > bestGain) {
       bestGain = gain;

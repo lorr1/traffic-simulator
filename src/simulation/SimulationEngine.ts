@@ -1,13 +1,15 @@
 import { Road } from './Road';
 import { VehicleFactory } from './VehicleFactory';
+import { IncidentManager } from './incidents/IncidentManager';
 import { computeAcceleration } from './models/IDMModel';
 import { evaluateLaneChange } from './models/MOBILModel';
-import type { SimulationParams, SimulationState, VehicleState } from '../types';
+import type { SimulationParams, SimulationState, VehicleState, IncidentConfig } from '../types';
 import { DEFAULT_PARAMS } from '../constants';
 
 export class SimulationEngine {
   road: Road;
   vehicleFactory: VehicleFactory;
+  incidentManager: IncidentManager;
   params: SimulationParams;
   simulationTime: number = 0;
   private accumulator: number = 0;
@@ -16,6 +18,15 @@ export class SimulationEngine {
     this.params = { ...params };
     this.road = new Road(params.roadLengthMeters, params.laneCount);
     this.vehicleFactory = new VehicleFactory();
+    this.incidentManager = new IncidentManager();
+  }
+
+  addIncident(config: IncidentConfig) {
+    return this.incidentManager.addIncident(config);
+  }
+
+  removeIncident(id: number) {
+    this.incidentManager.removeIncident(id);
   }
 
   update(wallDeltaMs: number): void {
@@ -38,11 +49,27 @@ export class SimulationEngine {
     // 1. Spawn vehicles
     this.vehicleFactory.trySpawn(dt, this.road, this.params);
 
-    // 2. Compute IDM acceleration for each vehicle
+    // 2. Compute IDM acceleration for each vehicle (with incident effects)
     for (const lane of this.road.lanes) {
       for (const vehicle of lane.vehicles) {
-        const leader = this.road.getLeader(vehicle);
-        vehicle.acceleration = computeAcceleration(vehicle, leader, this.params);
+        const actualLeader = this.road.getLeader(vehicle);
+        const virtualObstacle = this.incidentManager.getVirtualObstacle(vehicle);
+
+        // Use the closer of actual leader and virtual obstacle
+        let effectiveLeader = actualLeader;
+        if (virtualObstacle !== null) {
+          if (actualLeader === null || virtualObstacle.x < actualLeader.x) {
+            effectiveLeader = virtualObstacle;
+          }
+        }
+
+        const speedFactor = this.incidentManager.getSpeedReduction(vehicle);
+        vehicle.acceleration = computeAcceleration(
+          vehicle,
+          effectiveLeader,
+          this.params,
+          speedFactor,
+        );
       }
     }
 
@@ -52,9 +79,35 @@ export class SimulationEngine {
       const j = Math.floor(Math.random() * (i + 1));
       [allVehicles[i], allVehicles[j]] = [allVehicles[j], allVehicles[i]];
     }
+
+    // Build set of blocked lanes from active incidents for MOBIL
+    const blockedLanes = new Set<number>();
+    for (const incident of this.incidentManager.getActiveIncidents()) {
+      for (const lane of incident.lanesBlocked) {
+        blockedLanes.add(lane);
+      }
+    }
+
     for (const vehicle of allVehicles) {
       const leader = this.road.getLeader(vehicle);
-      const decision = evaluateLaneChange(vehicle, leader, this.road, this.params);
+      const virtualObstacle = this.incidentManager.getVirtualObstacle(vehicle);
+      const incidentAhead = virtualObstacle !== null;
+
+      // Use effective leader for MOBIL evaluation too
+      let effectiveLeader = leader;
+      if (virtualObstacle !== null) {
+        if (leader === null || virtualObstacle.x < leader.x) {
+          effectiveLeader = virtualObstacle;
+        }
+      }
+
+      const decision = evaluateLaneChange(
+        vehicle,
+        effectiveLeader,
+        this.road,
+        this.params,
+        { blockedLanes, incidentAhead },
+      );
       if (decision.shouldChange) {
         this.road.changeLane(vehicle, decision.targetLane);
       }
@@ -77,7 +130,10 @@ export class SimulationEngine {
     // 6. Remove vehicles past road end
     this.vehicleFactory.despawn(this.road);
 
-    // 7. Advance simulation time
+    // 7. Update incidents (remove expired)
+    this.incidentManager.update(this.simulationTime);
+
+    // 8. Advance simulation time
     this.simulationTime += dt;
   }
 
@@ -98,6 +154,7 @@ export class SimulationEngine {
   reset(): void {
     this.road = new Road(this.params.roadLengthMeters, this.params.laneCount);
     this.vehicleFactory = new VehicleFactory();
+    this.incidentManager = new IncidentManager();
     this.simulationTime = 0;
     this.accumulator = 0;
   }
