@@ -1,0 +1,5 @@
+Look at claude_plan/. Implement the first commit.
+
+---
+
+Please commit and push
