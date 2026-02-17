@@ -1,5 +1,6 @@
 import { SimulationCanvas } from './rendering/SimulationCanvas';
 import { ControlPanel } from './ui/ControlPanel';
+import { PlaybackControls } from './ui/PlaybackControls';
 import { useSimulation } from './hooks/useSimulation';
 import { DEFAULT_PARAMS } from './constants';
 
@@ -18,6 +19,15 @@ function App() {
           onReset={simulation.reset}
         />
         <div className="flex-1">
+          <PlaybackControls
+            paused={simulation.paused}
+            simulationTime={simulation.state.simulationTime}
+            speedMultiplier={simulation.engine.current.params.speedMultiplier}
+            onPause={simulation.pause}
+            onResume={simulation.resume}
+            onReset={simulation.reset}
+            onSpeedChange={(m) => simulation.setParams({ speedMultiplier: m })}
+          />
           <SimulationCanvas simulation={simulation} />
         </div>
       </main>
