@@ -1,7 +1,9 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { Renderer } from './Renderer';
 import { useSimulation } from '../hooks/useSimulation';
+import { useDataCollector } from '../hooks/useDataCollector';
 import { IncidentPopover, IncidentList } from '../ui/IncidentControls';
+import { FundamentalDiagram } from '../analytics/FundamentalDiagram';
 import { DEFAULT_PARAMS } from '../constants';
 import type { IncidentConfig } from '../types';
 
@@ -18,7 +20,9 @@ export function SimulationCanvas() {
     addIncident,
     removeIncident,
     getActiveIncidents,
+    engine: engineRef,
   } = useSimulation(DEFAULT_PARAMS);
+  const { chartData, update: updateCollector } = useDataCollector(engineRef);
 
   const [popover, setPopover] = useState<{
     positionX: number;
@@ -58,10 +62,11 @@ export function SimulationCanvas() {
     return () => observer.disconnect();
   }, []);
 
-  // Draw on state change
+  // Draw on state change and update data collector
   useEffect(() => {
     rendererRef.current?.draw(state, getActiveIncidents());
-  }, [state, getActiveIncidents]);
+    updateCollector();
+  }, [state, getActiveIncidents, updateCollector]);
 
   // Pan handlers
   const onMouseDown = useCallback((e: React.MouseEvent) => {
@@ -175,6 +180,7 @@ export function SimulationCanvas() {
         />
       )}
       <IncidentList incidents={incidents} onRemove={handleRemoveIncident} />
+      <FundamentalDiagram data={chartData} />
     </div>
   );
 }
