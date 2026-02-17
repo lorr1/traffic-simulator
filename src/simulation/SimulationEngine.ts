@@ -1,7 +1,7 @@
 import { Road } from './Road';
 import { VehicleFactory } from './VehicleFactory';
 import { computeAcceleration } from './models/IDMModel';
-import type { SimulationParams, VehicleState } from '../types';
+import type { SimulationParams, SimulationState, VehicleState } from '../types';
 import { DEFAULT_PARAMS } from '../constants';
 
 export class SimulationEngine {
@@ -66,7 +66,7 @@ export class SimulationEngine {
     this.simulationTime += dt;
   }
 
-  getState(): { vehicles: VehicleState[]; simulationTime: number } {
+  getState(): SimulationState {
     const vehicles: VehicleState[] = this.road.getAllVehicles().map((v) => ({
       id: v.id,
       x: v.x,

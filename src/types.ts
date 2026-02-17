@@ -44,6 +44,11 @@ export interface IncidentConfig {
   rubberneckingFactor: number;   // 0.5-1.0
 }
 
+export interface SimulationState {
+  vehicles: VehicleState[];
+  simulationTime: number;
+}
+
 export interface RoadSegmentData {
   segmentIndex: number;
   density: number;               // vehicles per km
