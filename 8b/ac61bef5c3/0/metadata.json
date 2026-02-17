@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "8bac61bef5c3",
+  "session_id": "65633e12-371e-481f-8ba0-e79e92089bc1",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-17T07:04:06.249831Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/simulation/models/MOBILModel.ts",
+    "src/simulation/models/__tests__/MOBILModel.test.ts"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "1b5a40fc-cbc3-464d-8ca9-45ef477b0218",
+  "token_usage": {
+    "input_tokens": 37,
+    "cache_creation_tokens": 33903,
+    "cache_read_tokens": 1079015,
+    "output_tokens": 4175,
+    "api_call_count": 29
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-17T07:04:06.177641Z",
+    "agent_lines": 278,
+    "human_added": 110,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 388,
+    "agent_percentage": 71.64948453608247
+  },
+  "transcript_path": ".claude/projects/-Users-laurelorr-Documents-code-traffic-simulator/65633e12-371e-481f-8ba0-e79e92089bc1.jsonl"
+}
