@@ -1,0 +1,5 @@
+Look at claude_plan/. Implement the fifth commit. MAke sure prior work is where it should be.
+
+---
+
+if it's all done, commit and push
