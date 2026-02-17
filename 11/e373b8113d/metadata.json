@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "11e373b8113d",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/simulation/Lane.ts",
+    "src/simulation/Vehicle.ts",
+    "src/simulation/__tests__/Lane.test.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/11/e373b8113d/0/metadata.json",
+      "transcript": "/11/e373b8113d/0/full.jsonl",
+      "context": "/11/e373b8113d/0/context.md",
+      "content_hash": "/11/e373b8113d/0/content_hash.txt",
+      "prompt": "/11/e373b8113d/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 18,
+    "cache_creation_tokens": 11974,
+    "cache_read_tokens": 348792,
+    "output_tokens": 1410,
+    "api_call_count": 14
+  }
+}
