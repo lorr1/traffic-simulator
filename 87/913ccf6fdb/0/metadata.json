@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "87913ccf6fdb",
+  "session_id": "5faaecc0-857e-4c30-8fd1-b3aefb9902f0",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-17T06:45:50.966626Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/rendering/Renderer.ts",
+    "src/rendering/RoadRenderer.ts",
+    "src/rendering/VehicleRenderer.ts"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 19,
+    "cache_creation_tokens": 11759,
+    "cache_read_tokens": 373076,
+    "output_tokens": 1209,
+    "api_call_count": 15
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-17T06:45:50.918971Z",
+    "agent_lines": 121,
+    "human_added": 109,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 230,
+    "agent_percentage": 52.60869565217391
+  },
+  "transcript_path": ".claude/projects/-Users-laurelorr-Documents-code-traffic-simulator/5faaecc0-857e-4c30-8fd1-b3aefb9902f0.jsonl"
+}

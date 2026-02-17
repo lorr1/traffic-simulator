@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "87913ccf6fdb",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/rendering/Renderer.ts",
+    "src/rendering/RoadRenderer.ts",
+    "src/rendering/VehicleRenderer.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/87/913ccf6fdb/0/metadata.json",
+      "transcript": "/87/913ccf6fdb/0/full.jsonl",
+      "context": "/87/913ccf6fdb/0/context.md",
+      "content_hash": "/87/913ccf6fdb/0/content_hash.txt",
+      "prompt": "/87/913ccf6fdb/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 19,
+    "cache_creation_tokens": 11759,
+    "cache_read_tokens": 373076,
+    "output_tokens": 1209,
+    "api_call_count": 15
+  }
+}
