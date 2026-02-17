@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "4dc94ece2730",
+  "session_id": "aa2576d8-9250-46f3-9a08-56c920d787e7",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-17T06:02:15.965469Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/simulation/models/IDMModel.ts",
+    "src/simulation/models/__tests__/IDMModel.test.ts"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 20,
+    "cache_creation_tokens": 11557,
+    "cache_read_tokens": 388870,
+    "output_tokens": 4124,
+    "api_call_count": 16
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-17T06:02:15.927648Z",
+    "agent_lines": 201,
+    "human_added": 108,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 309,
+    "agent_percentage": 65.0485436893204
+  },
+  "transcript_path": ".claude/projects/-Users-laurelorr-Documents-code-traffic-simulator/aa2576d8-9250-46f3-9a08-56c920d787e7.jsonl"
+}
