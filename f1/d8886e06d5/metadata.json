@@ -1,0 +1,45 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "f1d8886e06d5",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/App.tsx",
+    "src/analytics/DataCollector.ts",
+    "src/analytics/FlowTimeSeries.tsx",
+    "src/analytics/FundamentalDiagram.tsx",
+    "src/analytics/SpeedHeatmap.tsx",
+    "src/analytics/__tests__/DataCollector.test.ts",
+    "src/hooks/useDataCollector.ts",
+    "src/hooks/useSimulation.ts",
+    "src/rendering/IncidentRenderer.ts",
+    "src/rendering/Renderer.ts",
+    "src/rendering/SimulationCanvas.tsx",
+    "src/simulation/SimulationEngine.ts",
+    "src/simulation/__tests__/SimulationEngine.test.ts",
+    "src/simulation/incidents/Incident.ts",
+    "src/simulation/incidents/IncidentManager.ts",
+    "src/simulation/incidents/__tests__/IncidentManager.test.ts",
+    "src/simulation/models/MOBILModel.ts",
+    "src/simulation/models/__tests__/MOBILModel.test.ts",
+    "src/ui/ControlPanel.tsx",
+    "src/ui/IncidentControls.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/f1/d8886e06d5/0/metadata.json",
+      "transcript": "/f1/d8886e06d5/0/full.jsonl",
+      "context": "/f1/d8886e06d5/0/context.md",
+      "content_hash": "/f1/d8886e06d5/0/content_hash.txt",
+      "prompt": "/f1/d8886e06d5/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 263823,
+    "cache_read_tokens": 1379882,
+    "output_tokens": 2599,
+    "api_call_count": 11
+  }
+}

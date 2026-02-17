@@ -1,0 +1,49 @@
+Look at claude_plan/. Implement the 10th commit. MAke sure prior work is where it should be.
+
+---
+
+if it's all done, commit and push
+
+---
+
+So commit 10 is good
+
+---
+
+Move on to commit 11 from the claude folder
+
+---
+
+Move on to commit 12 from the claude folder
+
+---
+
+Move on to commit 13 from the claude folder
+
+---
+
+Move on to commit 14 from the claude folder
+
+---
+
+Move on to commit 15 from the claude folder
+
+---
+
+Move on to commit 16 from the claude folder
+
+---
+
+Move on to commit 17 from the claude folder
+
+---
+
+Move on to commit 18 from the claude folder
+
+---
+
+Move on to commit 19 from the claude folder
+
+---
+
+Move on to commit 20 from the claude folder

@@ -1,0 +1,52 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "f1d8886e06d5",
+  "session_id": "65633e12-371e-481f-8ba0-e79e92089bc1",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-17T16:44:05.929276Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/App.tsx",
+    "src/analytics/DataCollector.ts",
+    "src/analytics/FlowTimeSeries.tsx",
+    "src/analytics/FundamentalDiagram.tsx",
+    "src/analytics/SpeedHeatmap.tsx",
+    "src/analytics/__tests__/DataCollector.test.ts",
+    "src/hooks/useDataCollector.ts",
+    "src/hooks/useSimulation.ts",
+    "src/rendering/IncidentRenderer.ts",
+    "src/rendering/Renderer.ts",
+    "src/rendering/SimulationCanvas.tsx",
+    "src/simulation/SimulationEngine.ts",
+    "src/simulation/__tests__/SimulationEngine.test.ts",
+    "src/simulation/incidents/Incident.ts",
+    "src/simulation/incidents/IncidentManager.ts",
+    "src/simulation/incidents/__tests__/IncidentManager.test.ts",
+    "src/simulation/models/MOBILModel.ts",
+    "src/simulation/models/__tests__/MOBILModel.test.ts",
+    "src/ui/ControlPanel.tsx",
+    "src/ui/IncidentControls.tsx"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "5b1073a3-4c4b-4441-bddd-be8bb4940b1c",
+  "checkpoint_transcript_start": 673,
+  "transcript_lines_at_start": 673,
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 263823,
+    "cache_read_tokens": 1379882,
+    "output_tokens": 2599,
+    "api_call_count": 11
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-17T16:44:05.662089Z",
+    "agent_lines": 0,
+    "human_added": 315,
+    "human_modified": 10,
+    "human_removed": 0,
+    "total_committed": 315,
+    "agent_percentage": 0
+  },
+  "transcript_path": ".claude/projects/-Users-laurelorr-Documents-code-traffic-simulator/65633e12-371e-481f-8ba0-e79e92089bc1.jsonl"
+}
