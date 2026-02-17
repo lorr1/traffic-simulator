@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "f386441075ab",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/App.tsx",
+    "src/hooks/useSimulation.ts",
+    "src/rendering/SimulationCanvas.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/f3/86441075ab/0/metadata.json",
+      "transcript": "/f3/86441075ab/0/full.jsonl",
+      "context": "/f3/86441075ab/0/context.md",
+      "content_hash": "/f3/86441075ab/0/content_hash.txt",
+      "prompt": "/f3/86441075ab/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 18,
+    "cache_creation_tokens": 15613,
+    "cache_read_tokens": 378220,
+    "output_tokens": 684,
+    "api_call_count": 14
+  }
+}
