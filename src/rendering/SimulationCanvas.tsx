@@ -1,6 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { Renderer } from './Renderer';
-import { useSimulation } from '../hooks/useSimulation';
 import { useDataCollector } from '../hooks/useDataCollector';
 import { IncidentPopover, IncidentList } from '../ui/IncidentControls';
 import { FundamentalDiagram } from '../analytics/FundamentalDiagram';
@@ -8,10 +7,15 @@ import { SpeedHeatmap } from '../analytics/SpeedHeatmap';
 import { FlowTimeSeries } from '../analytics/FlowTimeSeries';
 import { DEFAULT_PARAMS } from '../constants';
 import type { IncidentConfig } from '../types';
+import type { useSimulation } from '../hooks/useSimulation';
 
 const LANE_WIDTH = 3.7;
 
-export function SimulationCanvas() {
+interface SimulationCanvasProps {
+  simulation: ReturnType<typeof useSimulation>;
+}
+
+export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<Renderer | null>(null);
   const isDragging = useRef(false);
@@ -23,7 +27,7 @@ export function SimulationCanvas() {
     removeIncident,
     getActiveIncidents,
     engine: engineRef,
-  } = useSimulation(DEFAULT_PARAMS);
+  } = simulation;
   const { chartData, heatmapHistory, flowTimeSeries, update: updateCollector } = useDataCollector(engineRef);
 
   const [popover, setPopover] = useState<{
@@ -106,10 +110,11 @@ export function SimulationCanvas() {
       const world = rendererRef.current.getCamera().screenToWorld(sx, sy);
 
       // Check if click is on the road
-      const roadHeight = DEFAULT_PARAMS.laneCount * LANE_WIDTH;
+      const params = engineRef.current.params;
+      const roadHeight = params.laneCount * LANE_WIDTH;
       if (
         world.x >= 0 &&
-        world.x <= DEFAULT_PARAMS.roadLengthMeters &&
+        world.x <= params.roadLengthMeters &&
         world.y >= 0 &&
         world.y <= roadHeight
       ) {
@@ -122,7 +127,7 @@ export function SimulationCanvas() {
         setPopover(null);
       }
     },
-    [],
+    [engineRef],
   );
 
   const onMouseLeave = useCallback(() => {
@@ -158,6 +163,7 @@ export function SimulationCanvas() {
   );
 
   const incidents = getActiveIncidents();
+  const params = engineRef.current.params;
 
   return (
     <div className="relative">
@@ -175,7 +181,7 @@ export function SimulationCanvas() {
           positionX={popover.positionX}
           screenX={popover.screenX}
           screenY={popover.screenY}
-          laneCount={DEFAULT_PARAMS.laneCount}
+          laneCount={params.laneCount}
           simulationTime={state.simulationTime}
           onCreat={handleCreateIncident}
           onCancel={() => setPopover(null)}
@@ -184,7 +190,7 @@ export function SimulationCanvas() {
       <IncidentList incidents={incidents} onRemove={handleRemoveIncident} />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
         <FundamentalDiagram data={chartData} />
-        <SpeedHeatmap history={heatmapHistory} maxSpeed={DEFAULT_PARAMS.desiredSpeed} />
+        <SpeedHeatmap history={heatmapHistory} maxSpeed={params.desiredSpeed} />
         <FlowTimeSeries data={flowTimeSeries} />
       </div>
     </div>
