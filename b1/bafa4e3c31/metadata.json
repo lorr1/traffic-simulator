@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "b1bafa4e3c31",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/analytics/FlowTimeSeries.tsx",
+    "src/hooks/useDataCollector.ts",
+    "src/rendering/SimulationCanvas.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/b1/bafa4e3c31/0/metadata.json",
+      "transcript": "/b1/bafa4e3c31/0/full.jsonl",
+      "context": "/b1/bafa4e3c31/0/context.md",
+      "content_hash": "/b1/bafa4e3c31/0/content_hash.txt",
+      "prompt": "/b1/bafa4e3c31/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 15,
+    "cache_creation_tokens": 6015,
+    "cache_read_tokens": 1805343,
+    "output_tokens": 2606,
+    "api_call_count": 13
+  }
+}
