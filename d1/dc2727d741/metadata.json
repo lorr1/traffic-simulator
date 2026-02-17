@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "d1dc2727d741",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/simulation/incidents/Incident.ts",
+    "src/simulation/incidents/IncidentManager.ts",
+    "src/simulation/incidents/__tests__/IncidentManager.test.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d1/dc2727d741/0/metadata.json",
+      "transcript": "/d1/dc2727d741/0/full.jsonl",
+      "context": "/d1/dc2727d741/0/context.md",
+      "content_hash": "/d1/dc2727d741/0/content_hash.txt",
+      "prompt": "/d1/dc2727d741/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 11,
+    "cache_creation_tokens": 6800,
+    "cache_read_tokens": 571715,
+    "output_tokens": 4003,
+    "api_call_count": 9
+  }
+}
