@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, type RefObject } from 'react';
 import { DataCollector } from '../analytics/DataCollector';
 import type { SimulationEngine } from '../simulation/SimulationEngine';
+import type { FlowTimePoint } from '../analytics/FlowTimeSeries';
 import type { RoadSegmentData } from '../types';
 
 export interface FlowDensityPoint {
@@ -10,11 +11,13 @@ export interface FlowDensityPoint {
 }
 
 const MAX_CHART_POINTS = 500;
+const SAMPLE_INTERVAL = 0.5; // must match DataCollector
 
 export function useDataCollector(engineRef: RefObject<SimulationEngine>) {
   const collectorRef = useRef(new DataCollector());
   const [chartData, setChartData] = useState<FlowDensityPoint[]>([]);
   const [heatmapHistory, setHeatmapHistory] = useState<RoadSegmentData[][]>([]);
+  const [flowTimeSeries, setFlowTimeSeries] = useState<FlowTimePoint[]>([]);
 
   const update = useCallback(() => {
     const engine = engineRef.current;
@@ -45,13 +48,29 @@ export function useDataCollector(engineRef: RefObject<SimulationEngine>) {
 
     setChartData(trimmed);
     setHeatmapHistory([...history]);
+
+    // Flow time series at road midpoint
+    const roadLength = engine.params.roadLengthMeters;
+    const midSegmentIndex = Math.floor(roadLength / 2 / 100); // 100m segments
+    const flowPoints: FlowTimePoint[] = [];
+    for (let i = 0; i < history.length; i++) {
+      const seg = history[i][midSegmentIndex];
+      if (seg) {
+        flowPoints.push({
+          time: parseFloat((i * SAMPLE_INTERVAL).toFixed(1)),
+          flow: seg.flow,
+        });
+      }
+    }
+    setFlowTimeSeries(flowPoints);
   }, [engineRef]);
 
   const clear = useCallback(() => {
     collectorRef.current.clear();
     setChartData([]);
     setHeatmapHistory([]);
+    setFlowTimeSeries([]);
   }, []);
 
-  return { chartData, heatmapHistory, update, clear };
+  return { chartData, heatmapHistory, flowTimeSeries, update, clear };
 }
