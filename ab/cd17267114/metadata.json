@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "abcd17267114",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/analytics/FundamentalDiagram.tsx",
+    "src/hooks/useDataCollector.ts",
+    "src/rendering/SimulationCanvas.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ab/cd17267114/0/metadata.json",
+      "transcript": "/ab/cd17267114/0/full.jsonl",
+      "context": "/ab/cd17267114/0/context.md",
+      "content_hash": "/ab/cd17267114/0/content_hash.txt",
+      "prompt": "/ab/cd17267114/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 16,
+    "cache_creation_tokens": 8674,
+    "cache_read_tokens": 1631371,
+    "output_tokens": 2050,
+    "api_call_count": 14
+  }
+}
