@@ -124,6 +124,75 @@ describe('SimulationEngine', () => {
     expect(engine.simulationTime).toBe(0);
   });
 
+  it('faster vehicle changes lane to overtake slower vehicle', () => {
+    const params = makeParams({ laneCount: 3, spawnRate: 0 });
+    const engine = new SimulationEngine(params);
+
+    // Slow vehicle in lane 1, fast vehicle behind it
+    const slow = new Vehicle(0, 200, 15, 1, 15);
+    const fast = new Vehicle(1, 170, 30, 1, 33.3);
+    engine.road.lanes[1].addVehicle(slow);
+    engine.road.lanes[1].addVehicle(fast);
+
+    // Run enough steps for a lane change to occur
+    let changed = false;
+    for (let i = 0; i < 300; i++) {
+      engine.step(params.dt);
+      if (fast.laneIndex !== 1) {
+        changed = true;
+        break;
+      }
+    }
+
+    expect(changed).toBe(true);
+    expect([0, 2]).toContain(fast.laneIndex);
+  });
+
+  it('no vehicles end up in invalid lanes after many steps', () => {
+    const params = makeParams({ laneCount: 3, spawnRate: 2 });
+    const engine = new SimulationEngine(params);
+
+    for (let i = 0; i < 1000; i++) {
+      engine.step(params.dt);
+      for (const v of engine.road.getAllVehicles()) {
+        expect(v.laneIndex).toBeGreaterThanOrEqual(0);
+        expect(v.laneIndex).toBeLessThan(params.laneCount);
+      }
+    }
+  });
+
+  it('high politeness results in fewer lane changes than low politeness', () => {
+    function countLaneChanges(politeness: number): number {
+      const params = makeParams({
+        laneCount: 3,
+        spawnRate: 1.5,
+        politenessFactor: politeness,
+      });
+      const engine = new SimulationEngine(params);
+      let changes = 0;
+
+      // Track lane indices to detect changes
+      const lastLane = new Map<number, number>();
+
+      for (let i = 0; i < 2000; i++) {
+        engine.step(params.dt);
+        for (const v of engine.road.getAllVehicles()) {
+          const prev = lastLane.get(v.id);
+          if (prev !== undefined && prev !== v.laneIndex) {
+            changes++;
+          }
+          lastLane.set(v.id, v.laneIndex);
+        }
+      }
+      return changes;
+    }
+
+    const highPoliteChanges = countLaneChanges(5.0);
+    const lowPoliteChanges = countLaneChanges(0.0);
+
+    expect(lowPoliteChanges).toBeGreaterThan(highPoliteChanges);
+  });
+
   it('vehicles past road end are despawned', () => {
     const params = makeParams({ laneCount: 1, spawnRate: 0, roadLengthMeters: 100 });
     const engine = new SimulationEngine(params);

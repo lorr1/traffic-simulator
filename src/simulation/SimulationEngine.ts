@@ -1,6 +1,7 @@
 import { Road } from './Road';
 import { VehicleFactory } from './VehicleFactory';
 import { computeAcceleration } from './models/IDMModel';
+import { evaluateLaneChange } from './models/MOBILModel';
 import type { SimulationParams, SimulationState, VehicleState } from '../types';
 import { DEFAULT_PARAMS } from '../constants';
 
@@ -45,7 +46,21 @@ export class SimulationEngine {
       }
     }
 
-    // 3. Euler integration
+    // 3. MOBIL lane changes (shuffle order to avoid bias)
+    const allVehicles = this.road.getAllVehicles();
+    for (let i = allVehicles.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allVehicles[i], allVehicles[j]] = [allVehicles[j], allVehicles[i]];
+    }
+    for (const vehicle of allVehicles) {
+      const leader = this.road.getLeader(vehicle);
+      const decision = evaluateLaneChange(vehicle, leader, this.road, this.params);
+      if (decision.shouldChange) {
+        this.road.changeLane(vehicle, decision.targetLane);
+      }
+    }
+
+    // 4. Euler integration
     for (const lane of this.road.lanes) {
       for (const vehicle of lane.vehicles) {
         vehicle.speed += vehicle.acceleration * dt;
@@ -56,13 +71,13 @@ export class SimulationEngine {
       }
     }
 
-    // 4. Re-sort lanes after position updates
+    // 5. Re-sort lanes after position updates
     this.road.resortAllLanes();
 
-    // 5. Remove vehicles past road end
+    // 6. Remove vehicles past road end
     this.vehicleFactory.despawn(this.road);
 
-    // 6. Advance simulation time
+    // 7. Advance simulation time
     this.simulationTime += dt;
   }
 
