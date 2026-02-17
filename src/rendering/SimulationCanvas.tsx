@@ -1,21 +1,39 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { Renderer } from './Renderer';
 import { useSimulation } from '../hooks/useSimulation';
+import { IncidentPopover, IncidentList } from '../ui/IncidentControls';
 import { DEFAULT_PARAMS } from '../constants';
+import type { IncidentConfig } from '../types';
+
+const LANE_WIDTH = 3.7;
 
 export function SimulationCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<Renderer | null>(null);
   const isDragging = useRef(false);
+  const dragMoved = useRef(false);
   const lastMouse = useRef({ x: 0, y: 0 });
-  const { state } = useSimulation(DEFAULT_PARAMS);
+  const {
+    state,
+    addIncident,
+    removeIncident,
+    getActiveIncidents,
+  } = useSimulation(DEFAULT_PARAMS);
+
+  const [popover, setPopover] = useState<{
+    positionX: number;
+    screenX: number;
+    screenY: number;
+  } | null>(null);
+
+  // Force re-render to update incident list
+  const [, setIncidentVersion] = useState(0);
 
   // Initialize renderer
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Set canvas size to match CSS size
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * devicePixelRatio;
     canvas.height = rect.height * devicePixelRatio;
@@ -42,12 +60,13 @@ export function SimulationCanvas() {
 
   // Draw on state change
   useEffect(() => {
-    rendererRef.current?.draw(state);
-  }, [state]);
+    rendererRef.current?.draw(state, getActiveIncidents());
+  }, [state, getActiveIncidents]);
 
   // Pan handlers
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     isDragging.current = true;
+    dragMoved.current = false;
     lastMouse.current = { x: e.clientX, y: e.clientY };
   }, []);
 
@@ -55,12 +74,53 @@ export function SimulationCanvas() {
     if (!isDragging.current) return;
     const dx = (e.clientX - lastMouse.current.x) * devicePixelRatio;
     const dy = (e.clientY - lastMouse.current.y) * devicePixelRatio;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+      dragMoved.current = true;
+    }
     rendererRef.current?.getCamera().handlePan(dx, dy);
     lastMouse.current = { x: e.clientX, y: e.clientY };
   }, []);
 
-  const onMouseUp = useCallback(() => {
+  const onMouseUp = useCallback(
+    (e: React.MouseEvent) => {
+      const wasDragging = dragMoved.current;
+      isDragging.current = false;
+      dragMoved.current = false;
+
+      // Only show popover on click (not drag)
+      if (wasDragging || !rendererRef.current) return;
+
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const sx = (e.clientX - rect.left) * devicePixelRatio;
+      const sy = (e.clientY - rect.top) * devicePixelRatio;
+      const world = rendererRef.current.getCamera().screenToWorld(sx, sy);
+
+      // Check if click is on the road
+      const roadHeight = DEFAULT_PARAMS.laneCount * LANE_WIDTH;
+      if (
+        world.x >= 0 &&
+        world.x <= DEFAULT_PARAMS.roadLengthMeters &&
+        world.y >= 0 &&
+        world.y <= roadHeight
+      ) {
+        setPopover({
+          positionX: world.x,
+          screenX: e.clientX - rect.left,
+          screenY: e.clientY - rect.top,
+        });
+      } else {
+        setPopover(null);
+      }
+    },
+    [],
+  );
+
+  const onMouseLeave = useCallback(() => {
     isDragging.current = false;
+    dragMoved.current = false;
   }, []);
 
   // Zoom handler
@@ -73,15 +133,48 @@ export function SimulationCanvas() {
     rendererRef.current?.getCamera().handleZoom(-e.deltaY, x, y);
   }, []);
 
+  const handleCreateIncident = useCallback(
+    (config: IncidentConfig) => {
+      addIncident(config);
+      setPopover(null);
+      setIncidentVersion((v) => v + 1);
+    },
+    [addIncident],
+  );
+
+  const handleRemoveIncident = useCallback(
+    (id: number) => {
+      removeIncident(id);
+      setIncidentVersion((v) => v + 1);
+    },
+    [removeIncident],
+  );
+
+  const incidents = getActiveIncidents();
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full h-[400px]"
-      onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
-      onMouseLeave={onMouseUp}
-      onWheel={onWheel}
-    />
+    <div className="relative">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-[400px]"
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseLeave}
+        onWheel={onWheel}
+      />
+      {popover && (
+        <IncidentPopover
+          positionX={popover.positionX}
+          screenX={popover.screenX}
+          screenY={popover.screenY}
+          laneCount={DEFAULT_PARAMS.laneCount}
+          simulationTime={state.simulationTime}
+          onCreat={handleCreateIncident}
+          onCancel={() => setPopover(null)}
+        />
+      )}
+      <IncidentList incidents={incidents} onRemove={handleRemoveIncident} />
+    </div>
   );
 }

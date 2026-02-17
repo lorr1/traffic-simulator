@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { SimulationEngine } from '../simulation/SimulationEngine';
-import type { SimulationParams, SimulationState } from '../types';
+import type { Incident } from '../simulation/incidents/Incident';
+import type { SimulationParams, SimulationState, IncidentConfig } from '../types';
 import { DEFAULT_PARAMS } from '../constants';
 
 export function useSimulation(initialParams: SimulationParams = DEFAULT_PARAMS) {
@@ -34,6 +35,18 @@ export function useSimulation(initialParams: SimulationParams = DEFAULT_PARAMS) 
     engineRef.current.setParams(p);
   }, []);
 
+  const addIncident = useCallback((config: IncidentConfig) => {
+    return engineRef.current.addIncident(config);
+  }, []);
+
+  const removeIncident = useCallback((id: number) => {
+    engineRef.current.removeIncident(id);
+  }, []);
+
+  const getActiveIncidents = useCallback((): Incident[] => {
+    return engineRef.current.incidentManager.getActiveIncidents();
+  }, []);
+
   return {
     state,
     paused,
@@ -41,6 +54,9 @@ export function useSimulation(initialParams: SimulationParams = DEFAULT_PARAMS) 
     resume,
     reset,
     setParams,
+    addIncident,
+    removeIncident,
+    getActiveIncidents,
     engine: engineRef,
   };
 }

@@ -1,6 +1,8 @@
 import { Camera } from './Camera';
 import { RoadRenderer } from './RoadRenderer';
 import { VehicleRenderer } from './VehicleRenderer';
+import { IncidentRenderer } from './IncidentRenderer';
+import type { Incident } from '../simulation/incidents/Incident';
 import type { SimulationState } from '../types';
 import { DEFAULT_PARAMS } from '../constants';
 
@@ -23,7 +25,7 @@ export class Renderer {
     );
   }
 
-  draw(state: SimulationState): void {
+  draw(state: SimulationState, incidents: Incident[] = []): void {
     const { width, height } = this.ctx.canvas;
 
     // 1. Clear canvas
@@ -43,7 +45,15 @@ export class Renderer {
       LANE_WIDTH,
     );
 
-    // 5. Draw vehicles
+    // 5. Draw incidents
+    IncidentRenderer.draw(
+      this.ctx,
+      incidents,
+      LANE_WIDTH,
+      state.simulationTime,
+    );
+
+    // 6. Draw vehicles
     VehicleRenderer.draw(
       this.ctx,
       state.vehicles,
@@ -51,7 +61,7 @@ export class Renderer {
       DEFAULT_PARAMS.desiredSpeed,
     );
 
-    // 6. Restore state
+    // 7. Restore state
     this.ctx.restore();
   }
 
