@@ -1,6 +1,10 @@
 import { Camera } from './Camera';
+import { RoadRenderer } from './RoadRenderer';
+import { VehicleRenderer } from './VehicleRenderer';
 import type { SimulationState } from '../types';
 import { DEFAULT_PARAMS } from '../constants';
+
+const LANE_WIDTH = 3.7; // meters
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
@@ -31,8 +35,21 @@ export class Renderer {
     // 3. Apply camera transform
     this.camera.applyTransform(this.ctx);
 
-    // 4. RoadRenderer.draw(ctx, ...) — added in commit 8
-    // 5. VehicleRenderer.draw(ctx, vehicles) — added in commit 8
+    // 4. Draw road
+    RoadRenderer.draw(
+      this.ctx,
+      DEFAULT_PARAMS.roadLengthMeters,
+      DEFAULT_PARAMS.laneCount,
+      LANE_WIDTH,
+    );
+
+    // 5. Draw vehicles
+    VehicleRenderer.draw(
+      this.ctx,
+      state.vehicles,
+      LANE_WIDTH,
+      DEFAULT_PARAMS.desiredSpeed,
+    );
 
     // 6. Restore state
     this.ctx.restore();
