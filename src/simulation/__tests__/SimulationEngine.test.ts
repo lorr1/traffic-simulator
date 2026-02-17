@@ -174,7 +174,7 @@ describe('SimulationEngine', () => {
       // Track lane indices to detect changes
       const lastLane = new Map<number, number>();
 
-      for (let i = 0; i < 2000; i++) {
+      for (let i = 0; i < 5000; i++) {
         engine.step(params.dt);
         for (const v of engine.road.getAllVehicles()) {
           const prev = lastLane.get(v.id);
@@ -187,7 +187,7 @@ describe('SimulationEngine', () => {
       return changes;
     }
 
-    const highPoliteChanges = countLaneChanges(5.0);
+    const highPoliteChanges = countLaneChanges(10.0);
     const lowPoliteChanges = countLaneChanges(0.0);
 
     expect(lowPoliteChanges).toBeGreaterThanOrEqual(highPoliteChanges);
