@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, type RefObject } from 'react';
 import { DataCollector } from '../analytics/DataCollector';
 import type { SimulationEngine } from '../simulation/SimulationEngine';
+import type { RoadSegmentData } from '../types';
 
 export interface FlowDensityPoint {
   density: number;
@@ -13,6 +14,7 @@ const MAX_CHART_POINTS = 500;
 export function useDataCollector(engineRef: RefObject<SimulationEngine>) {
   const collectorRef = useRef(new DataCollector());
   const [chartData, setChartData] = useState<FlowDensityPoint[]>([]);
+  const [heatmapHistory, setHeatmapHistory] = useState<RoadSegmentData[][]>([]);
 
   const update = useCallback(() => {
     const engine = engineRef.current;
@@ -42,12 +44,14 @@ export function useDataCollector(engineRef: RefObject<SimulationEngine>) {
       : points;
 
     setChartData(trimmed);
+    setHeatmapHistory([...history]);
   }, [engineRef]);
 
   const clear = useCallback(() => {
     collectorRef.current.clear();
     setChartData([]);
+    setHeatmapHistory([]);
   }, []);
 
-  return { chartData, update, clear };
+  return { chartData, heatmapHistory, update, clear };
 }

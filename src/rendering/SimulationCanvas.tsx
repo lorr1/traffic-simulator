@@ -4,6 +4,7 @@ import { useSimulation } from '../hooks/useSimulation';
 import { useDataCollector } from '../hooks/useDataCollector';
 import { IncidentPopover, IncidentList } from '../ui/IncidentControls';
 import { FundamentalDiagram } from '../analytics/FundamentalDiagram';
+import { SpeedHeatmap } from '../analytics/SpeedHeatmap';
 import { DEFAULT_PARAMS } from '../constants';
 import type { IncidentConfig } from '../types';
 
@@ -22,7 +23,7 @@ export function SimulationCanvas() {
     getActiveIncidents,
     engine: engineRef,
   } = useSimulation(DEFAULT_PARAMS);
-  const { chartData, update: updateCollector } = useDataCollector(engineRef);
+  const { chartData, heatmapHistory, update: updateCollector } = useDataCollector(engineRef);
 
   const [popover, setPopover] = useState<{
     positionX: number;
@@ -180,7 +181,10 @@ export function SimulationCanvas() {
         />
       )}
       <IncidentList incidents={incidents} onRemove={handleRemoveIncident} />
-      <FundamentalDiagram data={chartData} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+        <FundamentalDiagram data={chartData} />
+        <SpeedHeatmap history={heatmapHistory} maxSpeed={DEFAULT_PARAMS.desiredSpeed} />
+      </div>
     </div>
   );
 }
