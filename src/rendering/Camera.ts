@@ -1,7 +1,10 @@
+const DEFAULT_TILT = 0.28; // ~16° in radians
+
 export class Camera {
   x: number = 0;
   y: number = 0;
   zoom: number = 1;
+  tilt: number = DEFAULT_TILT;
   private canvasWidth: number;
   private canvasHeight: number;
   private baseScale: number;
@@ -14,31 +17,50 @@ export class Camera {
 
   worldToScreen(wx: number, wy: number): { x: number; y: number } {
     const scale = this.baseScale * this.zoom;
+    const dx = wx - this.x;
+    const dy = wy - this.y;
+    // Isometric shear: x_screen gets an offset from y, y_screen is foreshortened
+    const sinT = Math.sin(this.tilt);
+    const cosT = Math.cos(this.tilt);
     return {
-      x: (wx - this.x) * scale + this.canvasWidth / 2,
-      y: (wy - this.y) * scale + this.canvasHeight / 2,
+      x: (dx + dy * sinT) * scale + this.canvasWidth / 2,
+      y: dy * cosT * scale + this.canvasHeight / 2,
     };
   }
 
   screenToWorld(sx: number, sy: number): { x: number; y: number } {
     const scale = this.baseScale * this.zoom;
+    const sinT = Math.sin(this.tilt);
+    const cosT = Math.cos(this.tilt);
+    const relX = (sx - this.canvasWidth / 2) / scale;
+    const relY = (sy - this.canvasHeight / 2) / scale;
+    const dy = relY / cosT;
+    const dx = relX - dy * sinT;
     return {
-      x: (sx - this.canvasWidth / 2) / scale + this.x,
-      y: (sy - this.canvasHeight / 2) / scale + this.y,
+      x: dx + this.x,
+      y: dy + this.y,
     };
   }
 
   applyTransform(ctx: CanvasRenderingContext2D): void {
     const scale = this.baseScale * this.zoom;
+    const sinT = Math.sin(this.tilt);
+    const cosT = Math.cos(this.tilt);
     ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
-    ctx.scale(scale, scale);
+    // Combined scale + shear matrix: [scale, 0, scale*sinT, scale*cosT, 0, 0]
+    ctx.transform(scale, 0, scale * sinT, scale * cosT, 0, 0);
     ctx.translate(-this.x, -this.y);
   }
 
   handlePan(dx: number, dy: number): void {
     const scale = this.baseScale * this.zoom;
-    this.x -= dx / scale;
-    this.y -= dy / scale;
+    const sinT = Math.sin(this.tilt);
+    const cosT = Math.cos(this.tilt);
+    // Invert the screen-to-world delta
+    const dwy = dy / (scale * cosT);
+    const dwx = dx / scale - dwy * sinT;
+    this.x -= dwx;
+    this.y -= dwy;
   }
 
   handleZoom(delta: number, centerX: number, centerY: number): void {

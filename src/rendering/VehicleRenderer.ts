@@ -3,6 +3,30 @@ import { speedToColor } from '../utils/colors';
 
 const VEHICLE_WIDTH = 2.0; // meters
 const CORNER_RADIUS = 0.5; // meters
+const SHADOW_OFFSET_X = 0.3; // meters (isometric shadow shift)
+const SHADOW_OFFSET_Y = 0.4; // meters
+const TOP_HIGHLIGHT = 0.15; // fraction of vehicle height for top face
+
+function drawRoundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+): void {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
 
 export class VehicleRenderer {
   static draw(
@@ -18,22 +42,21 @@ export class VehicleRenderer {
       const h = VEHICLE_WIDTH;
       const r = Math.min(CORNER_RADIUS, w / 2, h / 2);
 
-      // Color based on speed
-      ctx.fillStyle = speedToColor(vehicle.speed, maxSpeed);
-
-      // Draw rounded rectangle
-      ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.lineTo(x + w - r, y);
-      ctx.arcTo(x + w, y, x + w, y + r, r);
-      ctx.lineTo(x + w, y + h - r);
-      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-      ctx.lineTo(x + r, y + h);
-      ctx.arcTo(x, y + h, x, y + h - r, r);
-      ctx.lineTo(x, y + r);
-      ctx.arcTo(x, y, x + r, y, r);
-      ctx.closePath();
+      // Drop shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      drawRoundedRect(ctx, x + SHADOW_OFFSET_X, y + SHADOW_OFFSET_Y, w, h, r);
       ctx.fill();
+
+      // Main body
+      const color = speedToColor(vehicle.speed, maxSpeed);
+      ctx.fillStyle = color;
+      drawRoundedRect(ctx, x, y, w, h, r);
+      ctx.fill();
+
+      // Top face highlight (lighter strip along top edge)
+      const topH = h * TOP_HIGHLIGHT;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.fillRect(x + r, y, w - 2 * r, topH);
 
       // Direction indicator (small triangle at front)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';

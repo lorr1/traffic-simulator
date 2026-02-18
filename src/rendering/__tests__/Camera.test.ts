@@ -37,6 +37,38 @@ describe('Camera', () => {
     expect(world.y).toBeCloseTo(wy, 6);
   });
 
+  it('round-trip works with isometric tilt', () => {
+    const camera = createCamera();
+    // Default tilt is ~0.28 radians
+
+    const points = [
+      { wx: 0, wy: 0 },
+      { wx: 1000, wy: 10 },
+      { wx: 500, wy: -20 },
+      { wx: 1500, wy: 50 },
+    ];
+
+    for (const { wx, wy } of points) {
+      const screen = camera.worldToScreen(wx, wy);
+      const world = camera.screenToWorld(screen.x, screen.y);
+      expect(world.x).toBeCloseTo(wx, 6);
+      expect(world.y).toBeCloseTo(wy, 6);
+    }
+  });
+
+  it('isometric tilt shifts x screen position based on y world', () => {
+    const camera = createCamera();
+
+    // Two points at same x but different y
+    const p1 = camera.worldToScreen(500, 0);
+    const p2 = camera.worldToScreen(500, 10);
+
+    // With tilt, y>0 should shift x to the right
+    expect(p2.x).toBeGreaterThan(p1.x);
+    // y>0 should also move down (foreshortened)
+    expect(p2.y).toBeGreaterThan(p1.y);
+  });
+
   it('zoom in increases pixel scale', () => {
     const camera = createCamera();
     const p1 = camera.worldToScreen(100, 0);

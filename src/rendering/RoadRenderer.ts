@@ -6,7 +6,8 @@ const DASH_LENGTH = 3.0; // meters
 const DASH_GAP = 9.0; // meters
 const MARKING_WIDTH = 0.15; // meters
 
-const ROAD_COLOR = '#374151'; // dark gray
+const ROAD_COLOR_NEAR = '#424d5e'; // lighter near bottom (closer edge)
+const ROAD_COLOR_FAR = '#2d3544'; // darker far edge
 const SHOULDER_COLOR = '#4b5563'; // lighter gray
 const MARKING_COLOR = '#ffffff';
 
@@ -19,12 +20,15 @@ export class RoadRenderer {
   ): void {
     const roadHeight = laneCount * laneWidth;
 
-    // 1. Road shoulders (slightly lighter gray)
+    // 1. Road shoulders
     ctx.fillStyle = SHOULDER_COLOR;
     ctx.fillRect(0, -SHOULDER_WIDTH, roadLength, roadHeight + 2 * SHOULDER_WIDTH);
 
-    // 2. Dark gray road surface rectangle
-    ctx.fillStyle = ROAD_COLOR;
+    // 2. Road surface with gradient (lighter near bottom = closer)
+    const gradient = ctx.createLinearGradient(0, 0, 0, roadHeight);
+    gradient.addColorStop(0, ROAD_COLOR_FAR);
+    gradient.addColorStop(1, ROAD_COLOR_NEAR);
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, roadLength, roadHeight);
 
     // 3. Solid white edge lines top and bottom
