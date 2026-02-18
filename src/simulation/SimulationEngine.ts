@@ -2,6 +2,7 @@ import { Road } from './Road';
 import { OnRamp } from './OnRamp';
 import { VehicleFactory } from './VehicleFactory';
 import { IncidentManager } from './incidents/IncidentManager';
+import { ScenarioManager } from './scenarios/ScenarioManager';
 import { computeAcceleration } from './models/IDMModel';
 import { evaluateLaneChange } from './models/MOBILModel';
 import type { SimulationParams, SimulationState, VehicleState, IncidentConfig } from '../types';
@@ -11,6 +12,7 @@ export class SimulationEngine {
   road: Road;
   vehicleFactory: VehicleFactory;
   incidentManager: IncidentManager;
+  scenarioManager: ScenarioManager;
   params: SimulationParams;
   simulationTime: number = 0;
   private accumulator: number = 0;
@@ -20,6 +22,7 @@ export class SimulationEngine {
     this.road = new Road(params.roadLengthMeters, params.laneCount);
     this.vehicleFactory = new VehicleFactory();
     this.incidentManager = new IncidentManager();
+    this.scenarioManager = new ScenarioManager();
 
     // Default on-ramp at 1/3 of road length
     const ramp = new OnRamp(Math.round(params.roadLengthMeters / 3));
@@ -141,10 +144,31 @@ export class SimulationEngine {
       ramp.stepVehicles(dt, this.road, this.params);
     }
 
-    // 8. Update incidents (remove expired)
+    // 8. Process scenario events
+    const events = this.scenarioManager.checkEvents(this.simulationTime);
+    for (const event of events) {
+      if (event.action === 'addIncident' && typeof event.payload === 'object') {
+        const p = event.payload as Partial<IncidentConfig>;
+        this.addIncident({
+          id: Date.now() + Math.random(),
+          positionX: p.positionX ?? 1000,
+          lanesBlocked: p.lanesBlocked ?? [0],
+          severity: p.severity ?? 0.5,
+          startTime: this.simulationTime,
+          duration: p.duration ?? 120,
+          rubberneckingFactor: p.rubberneckingFactor ?? 0.7,
+        });
+      } else if (event.action === 'removeIncident' && typeof event.payload === 'number') {
+        this.removeIncident(event.payload);
+      } else if (event.action === 'setSpawnRate' && typeof event.payload === 'number') {
+        this.params.spawnRate = event.payload;
+      }
+    }
+
+    // 9. Update incidents (remove expired)
     this.incidentManager.update(this.simulationTime);
 
-    // 9. Advance simulation time
+    // 10. Advance simulation time
     this.simulationTime += dt;
   }
 

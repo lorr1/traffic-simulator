@@ -5,9 +5,11 @@ import { DashboardLayout } from './ui/DashboardLayout';
 import { FundamentalDiagram } from './analytics/FundamentalDiagram';
 import { SpeedHeatmap } from './analytics/SpeedHeatmap';
 import { FlowTimeSeries } from './analytics/FlowTimeSeries';
+import { ScenarioSelector } from './ui/ScenarioSelector';
 import { useSimulation } from './hooks/useSimulation';
 import { useDataCollector } from './hooks/useDataCollector';
 import { DEFAULT_PARAMS } from './constants';
+import type { Scenario } from './simulation/scenarios/scenarios';
 import { useState, useCallback } from 'react';
 
 function App() {
@@ -40,10 +42,32 @@ function App() {
     clear();
   };
 
+  const handleScenarioSelect = useCallback((scenario: Scenario | null) => {
+    const engine = simulation.engine.current;
+    if (scenario) {
+      const scenarioParams = engine.scenarioManager.loadScenario(scenario);
+      simulation.setParams({ ...DEFAULT_PARAMS, ...scenarioParams });
+      simulation.reset();
+      clear();
+      // Apply on-ramp config
+      const ramp = engine.road.onRamps[0];
+      if (ramp && scenario.onRampEnabled !== undefined) {
+        ramp.enabled = scenario.onRampEnabled;
+        setOnRampState((prev) => ({ ...prev, enabled: scenario.onRampEnabled! }));
+      }
+    } else {
+      engine.scenarioManager.clear();
+      simulation.setParams(DEFAULT_PARAMS);
+      simulation.reset();
+      clear();
+    }
+  }, [simulation, clear]);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col">
-      <header className="flex items-center justify-between px-4 py-2">
-        <h1 className="text-xl font-bold">Traffic Simulator</h1>
+      <header className="flex items-center justify-between px-4 py-2 gap-4">
+        <h1 className="text-xl font-bold shrink-0">Traffic Simulator</h1>
+        <ScenarioSelector onSelect={handleScenarioSelect} />
         <PlaybackControls
           paused={simulation.paused}
           simulationTime={simulation.state.simulationTime}
