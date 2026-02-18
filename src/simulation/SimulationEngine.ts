@@ -135,15 +135,21 @@ export class SimulationEngine {
     // 6. Remove vehicles past road end
     this.vehicleFactory.despawn(this.road);
 
-    // 7. Update incidents (remove expired)
+    // 7. On-ramp spawning and merge
+    for (const ramp of this.road.onRamps) {
+      ramp.trySpawn(dt, this.params);
+      ramp.stepVehicles(dt, this.road, this.params);
+    }
+
+    // 8. Update incidents (remove expired)
     this.incidentManager.update(this.simulationTime);
 
-    // 8. Advance simulation time
+    // 9. Advance simulation time
     this.simulationTime += dt;
   }
 
   getState(): SimulationState {
-    const vehicles: VehicleState[] = this.road.getAllVehicles().map((v) => ({
+    const toState = (v: { id: number; x: number; laneIndex: number; speed: number; acceleration: number; length: number; desiredSpeed: number }) => ({
       id: v.id,
       x: v.x,
       laneIndex: v.laneIndex,
@@ -151,7 +157,22 @@ export class SimulationEngine {
       acceleration: v.acceleration,
       length: v.length,
       desiredSpeed: v.desiredSpeed,
-    }));
+    });
+
+    const vehicles: VehicleState[] = this.road.getAllVehicles().map(toState);
+
+    // Include on-ramp vehicles with ramp position metadata
+    for (const ramp of this.road.onRamps) {
+      for (const v of ramp.lane.vehicles) {
+        const state = toState(v);
+        state.onRamp = {
+          startX: ramp.startX,
+          endX: ramp.endX,
+          laneCount: this.road.lanes.length,
+        };
+        vehicles.push(state);
+      }
+    }
 
     return { vehicles, simulationTime: this.simulationTime };
   }

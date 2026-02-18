@@ -45,6 +45,8 @@ describe('SimulationEngine', () => {
   it('no collisions after many steps with high spawn rate', () => {
     const params = makeParams({ laneCount: 1, spawnRate: 3 });
     const engine = new SimulationEngine(params);
+    // Disable on-ramp to isolate main-road collision check
+    for (const ramp of engine.road.onRamps) ramp.enabled = false;
 
     for (let i = 0; i < 1000; i++) {
       engine.step(params.dt);

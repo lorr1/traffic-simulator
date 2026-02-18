@@ -8,11 +8,27 @@ import { FlowTimeSeries } from './analytics/FlowTimeSeries';
 import { useSimulation } from './hooks/useSimulation';
 import { useDataCollector } from './hooks/useDataCollector';
 import { DEFAULT_PARAMS } from './constants';
+import { useState, useCallback } from 'react';
 
 function App() {
   const simulation = useSimulation(DEFAULT_PARAMS);
   const { chartData, heatmapHistory, flowTimeSeries, update, clear } =
     useDataCollector(simulation.engine);
+
+  const getOnRamp = () => simulation.engine.current.road.onRamps[0];
+
+  const [onRampState, setOnRampState] = useState({
+    enabled: getOnRamp()?.enabled ?? true,
+    spawnRate: getOnRamp()?.spawnRate ?? 0.3,
+  });
+
+  const handleOnRampChange = useCallback((changes: Partial<typeof onRampState>) => {
+    const ramp = getOnRamp();
+    if (!ramp) return;
+    if (changes.enabled !== undefined) ramp.enabled = changes.enabled;
+    if (changes.spawnRate !== undefined) ramp.spawnRate = changes.spawnRate;
+    setOnRampState((prev) => ({ ...prev, ...changes }));
+  }, []);
 
   // Trigger data collection on each state change
   if (simulation.state.simulationTime > 0) {
@@ -46,6 +62,8 @@ function App() {
               params={simulation.engine.current.params}
               onParamChange={simulation.setParams}
               onReset={handleReset}
+              onRamp={onRampState}
+              onOnRampChange={handleOnRampChange}
             />
           }
           fundamentalDiagram={<FundamentalDiagram data={chartData} />}

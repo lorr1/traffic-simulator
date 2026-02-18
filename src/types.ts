@@ -32,6 +32,7 @@ export interface VehicleState {
   acceleration: number;
   length: number;
   desiredSpeed: number;
+  onRamp?: { startX: number; endX: number; laneCount: number };
 }
 
 export interface IncidentConfig {

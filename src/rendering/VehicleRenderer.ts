@@ -37,7 +37,22 @@ export class VehicleRenderer {
   ): void {
     for (const vehicle of vehicles) {
       const x = vehicle.x - vehicle.length / 2;
-      const y = vehicle.laneIndex * laneWidth + (laneWidth - VEHICLE_WIDTH) / 2;
+      let y: number;
+
+      if (vehicle.onRamp) {
+        // Position on ramp: interpolate between ramp entry and merge point
+        const ramp = vehicle.onRamp;
+        const roadHeight = ramp.laneCount * laneWidth;
+        const rampOffset = laneWidth * 1.5;
+        const t = Math.min(1, Math.max(0, (vehicle.x - ramp.startX) / (ramp.endX - ramp.startX)));
+        // Ramp y goes from (roadHeight + rampOffset - laneWidth*0.3) at start
+        // to (roadHeight) at merge point, with vehicle centered in the lane
+        const rampTopAtT = roadHeight + rampOffset * (1 - t) - laneWidth * 0.3 * (1 - t);
+        y = rampTopAtT + (laneWidth - VEHICLE_WIDTH) / 2 * (0.3 + 0.7 * t);
+      } else {
+        y = vehicle.laneIndex * laneWidth + (laneWidth - VEHICLE_WIDTH) / 2;
+      }
+
       const w = vehicle.length;
       const h = VEHICLE_WIDTH;
       const r = Math.min(CORNER_RADIUS, w / 2, h / 2);

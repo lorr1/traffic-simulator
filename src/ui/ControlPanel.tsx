@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import type { SimulationParams } from '../types';
 
+interface OnRampState {
+  enabled: boolean;
+  spawnRate: number;
+}
+
 interface ControlPanelProps {
   params: SimulationParams;
   onParamChange: (params: Partial<SimulationParams>) => void;
   onReset: () => void;
+  onRamp?: OnRampState;
+  onOnRampChange?: (state: Partial<OnRampState>) => void;
 }
 
 interface SliderRowProps {
@@ -61,7 +68,7 @@ function Section({ title, defaultOpen = true, children }: SectionProps) {
   );
 }
 
-export function ControlPanel({ params, onParamChange, onReset }: ControlPanelProps) {
+export function ControlPanel({ params, onParamChange, onReset, onRamp, onOnRampChange }: ControlPanelProps) {
   return (
     <div className="text-sm overflow-y-auto h-full">
       <div className="flex items-center justify-between mb-3">
@@ -180,6 +187,33 @@ export function ControlPanel({ params, onParamChange, onReset }: ControlPanelPro
           onChange={(v) => onParamChange({ spawnRate: v })}
         />
       </Section>
+
+      {onRamp && onOnRampChange && (
+        <Section title="On-Ramp" defaultOpen={false}>
+          <div className="mb-2">
+            <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={onRamp.enabled}
+                onChange={(e) => onOnRampChange({ enabled: e.target.checked })}
+                className="accent-blue-500"
+              />
+              Enabled
+            </label>
+          </div>
+          {onRamp.enabled && (
+            <SliderRow
+              label="Ramp Spawn Rate"
+              value={onRamp.spawnRate}
+              min={0.1}
+              max={2.0}
+              step={0.1}
+              display={(v) => `${v.toFixed(1)} veh/s`}
+              onChange={(v) => onOnRampChange({ spawnRate: v })}
+            />
+          )}
+        </Section>
+      )}
     </div>
   );
 }
