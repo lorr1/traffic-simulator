@@ -63,7 +63,7 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
 
   // Draw on state change
   useEffect(() => {
-    rendererRef.current?.draw(state, getActiveIncidents());
+    rendererRef.current?.draw(state, getActiveIncidents(), engineRef.current.road.onRamps);
   }, [state, getActiveIncidents]);
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {

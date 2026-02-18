@@ -1,4 +1,5 @@
 import { Road } from './Road';
+import { OnRamp } from './OnRamp';
 import { VehicleFactory } from './VehicleFactory';
 import { IncidentManager } from './incidents/IncidentManager';
 import { computeAcceleration } from './models/IDMModel';
@@ -19,6 +20,10 @@ export class SimulationEngine {
     this.road = new Road(params.roadLengthMeters, params.laneCount);
     this.vehicleFactory = new VehicleFactory();
     this.incidentManager = new IncidentManager();
+
+    // Default on-ramp at 1/3 of road length
+    const ramp = new OnRamp(Math.round(params.roadLengthMeters / 3));
+    this.road.addOnRamp(ramp);
   }
 
   addIncident(config: IncidentConfig) {
@@ -157,6 +162,10 @@ export class SimulationEngine {
     this.incidentManager = new IncidentManager();
     this.simulationTime = 0;
     this.accumulator = 0;
+
+    // Re-add default on-ramp
+    const ramp = new OnRamp(Math.round(this.params.roadLengthMeters / 3));
+    this.road.addOnRamp(ramp);
   }
 
   setParams(params: Partial<SimulationParams>): void {

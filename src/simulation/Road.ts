@@ -1,15 +1,29 @@
 import { Lane } from './Lane';
+import { OnRamp } from './OnRamp';
 import { Vehicle } from './Vehicle';
 
 export class Road {
   lanes: Lane[];
   length: number;
+  onRamps: OnRamp[];
 
   constructor(length: number, laneCount: number) {
     this.length = length;
     this.lanes = [];
+    this.onRamps = [];
     for (let i = 0; i < laneCount; i++) {
       this.lanes.push(new Lane(i));
+    }
+  }
+
+  addOnRamp(onRamp: OnRamp): void {
+    this.onRamps.push(onRamp);
+  }
+
+  removeOnRamp(onRamp: OnRamp): void {
+    const idx = this.onRamps.indexOf(onRamp);
+    if (idx !== -1) {
+      this.onRamps.splice(idx, 1);
     }
   }
 

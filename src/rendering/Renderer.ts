@@ -3,6 +3,7 @@ import { RoadRenderer } from './RoadRenderer';
 import { VehicleRenderer } from './VehicleRenderer';
 import { IncidentRenderer } from './IncidentRenderer';
 import type { Incident } from '../simulation/incidents/Incident';
+import type { OnRamp } from '../simulation/OnRamp';
 import type { SimulationState } from '../types';
 import { DEFAULT_PARAMS } from '../constants';
 
@@ -25,7 +26,7 @@ export class Renderer {
     );
   }
 
-  draw(state: SimulationState, incidents: Incident[] = []): void {
+  draw(state: SimulationState, incidents: Incident[] = [], onRamps: OnRamp[] = []): void {
     const { width, height } = this.ctx.canvas;
 
     // 1. Clear canvas
@@ -43,6 +44,7 @@ export class Renderer {
       DEFAULT_PARAMS.roadLengthMeters,
       DEFAULT_PARAMS.laneCount,
       LANE_WIDTH,
+      onRamps,
     );
 
     // 5. Draw incidents
