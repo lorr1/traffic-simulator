@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "ece890fa3c56",
+  "session_id": "65633e12-371e-481f-8ba0-e79e92089bc1",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-18T07:34:25.221909Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/simulation/scenarios/ScenarioManager.ts",
+    "src/simulation/scenarios/__tests__/ScenarioManager.test.ts",
+    "src/simulation/scenarios/scenarios.ts"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "eea63de1-ceaf-47f2-a747-0ca67ff6aba1",
+  "checkpoint_transcript_start": 1197,
+  "transcript_lines_at_start": 1197,
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 6028,
+    "cache_read_tokens": 1142617,
+    "output_tokens": 2419,
+    "api_call_count": 10
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-18T07:34:24.771798Z",
+    "agent_lines": 224,
+    "human_added": 113,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 337,
+    "agent_percentage": 66.46884272997032
+  },
+  "transcript_path": ".claude/projects/-Users-laurelorr-Documents-code-traffic-simulator/65633e12-371e-481f-8ba0-e79e92089bc1.jsonl"
+}
