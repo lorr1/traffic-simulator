@@ -25,11 +25,8 @@ function pointColor(age: number): string {
 
 export function FundamentalDiagram({ data }: FundamentalDiagramProps) {
   return (
-    <div className="bg-gray-800 rounded-lg p-3">
-      <h3 className="text-sm text-gray-400 mb-2">
-        Fundamental Diagram (Flow vs Density)
-      </h3>
-      <ResponsiveContainer width="100%" height={250}>
+    <div className="h-full">
+      <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
           <XAxis
@@ -80,3 +77,4 @@ export function FundamentalDiagram({ data }: FundamentalDiagramProps) {
     </div>
   );
 }
+

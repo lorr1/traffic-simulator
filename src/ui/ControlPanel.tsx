@@ -63,7 +63,7 @@ function Section({ title, defaultOpen = true, children }: SectionProps) {
 
 export function ControlPanel({ params, onParamChange, onReset }: ControlPanelProps) {
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 text-sm w-64 overflow-y-auto max-h-[calc(100vh-120px)]">
+    <div className="text-sm overflow-y-auto h-full">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-bold text-gray-200">Parameters</h2>
         <button

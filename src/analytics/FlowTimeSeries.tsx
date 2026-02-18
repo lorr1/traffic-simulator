@@ -19,11 +19,8 @@ interface FlowTimeSeriesProps {
 
 export function FlowTimeSeries({ data }: FlowTimeSeriesProps) {
   return (
-    <div className="bg-gray-800 rounded-lg p-3">
-      <h3 className="text-sm text-gray-400 mb-2">
-        Flow at Midpoint (veh/hr)
-      </h3>
-      <ResponsiveContainer width="100%" height={250}>
+    <div className="h-full">
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
           <XAxis

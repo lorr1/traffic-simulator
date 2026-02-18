@@ -1,11 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { Renderer } from './Renderer';
-import { useDataCollector } from '../hooks/useDataCollector';
 import { IncidentPopover, IncidentList } from '../ui/IncidentControls';
-import { FundamentalDiagram } from '../analytics/FundamentalDiagram';
-import { SpeedHeatmap } from '../analytics/SpeedHeatmap';
-import { FlowTimeSeries } from '../analytics/FlowTimeSeries';
-import { DEFAULT_PARAMS } from '../constants';
 import type { IncidentConfig } from '../types';
 import type { useSimulation } from '../hooks/useSimulation';
 
@@ -28,7 +23,6 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
     getActiveIncidents,
     engine: engineRef,
   } = simulation;
-  const { chartData, heatmapHistory, flowTimeSeries, update: updateCollector } = useDataCollector(engineRef);
 
   const [popover, setPopover] = useState<{
     positionX: number;
@@ -36,7 +30,6 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
     screenY: number;
   } | null>(null);
 
-  // Force re-render to update incident list
   const [, setIncidentVersion] = useState(0);
 
   // Initialize renderer
@@ -68,13 +61,11 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Draw on state change and update data collector
+  // Draw on state change
   useEffect(() => {
     rendererRef.current?.draw(state, getActiveIncidents());
-    updateCollector();
-  }, [state, getActiveIncidents, updateCollector]);
+  }, [state, getActiveIncidents]);
 
-  // Pan handlers
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     isDragging.current = true;
     dragMoved.current = false;
@@ -98,7 +89,6 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
       isDragging.current = false;
       dragMoved.current = false;
 
-      // Only show popover on click (not drag)
       if (wasDragging || !rendererRef.current) return;
 
       const canvas = canvasRef.current;
@@ -109,7 +99,6 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
       const sy = (e.clientY - rect.top) * devicePixelRatio;
       const world = rendererRef.current.getCamera().screenToWorld(sx, sy);
 
-      // Check if click is on the road
       const params = engineRef.current.params;
       const roadHeight = params.laneCount * LANE_WIDTH;
       if (
@@ -135,7 +124,6 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
     dragMoved.current = false;
   }, []);
 
-  // Zoom handler
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -166,10 +154,10 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
   const params = engineRef.current.params;
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <canvas
         ref={canvasRef}
-        className="w-full h-[400px]"
+        className="w-full h-full"
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
@@ -188,11 +176,6 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
         />
       )}
       <IncidentList incidents={incidents} onRemove={handleRemoveIncident} />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-        <FundamentalDiagram data={chartData} />
-        <SpeedHeatmap history={heatmapHistory} maxSpeed={params.desiredSpeed} />
-        <FlowTimeSeries data={flowTimeSeries} />
-      </div>
     </div>
   );
 }

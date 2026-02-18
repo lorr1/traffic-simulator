@@ -107,11 +107,8 @@ export function SpeedHeatmap({
   }, [history, maxSpeed, width, height]);
 
   return (
-    <div className="bg-gray-800 rounded-lg p-3">
-      <h3 className="text-sm text-gray-400 mb-2">
-        Speed Heatmap (Space-Time)
-      </h3>
-      <canvas ref={canvasRef} className="w-full" style={{ imageRendering: 'pixelated' }} />
+    <div className="h-full">
+      <canvas ref={canvasRef} className="w-full h-full" style={{ imageRendering: 'pixelated' }} />
     </div>
   );
 }
