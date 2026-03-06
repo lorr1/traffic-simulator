@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "e9d4efa3320f",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/simulation/SimulationEngine.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e9/d4efa3320f/0/metadata.json",
+      "transcript": "/e9/d4efa3320f/0/full.jsonl",
+      "context": "/e9/d4efa3320f/0/context.md",
+      "content_hash": "/e9/d4efa3320f/0/content_hash.txt",
+      "prompt": "/e9/d4efa3320f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 15,
+    "cache_creation_tokens": 142922,
+    "cache_read_tokens": 1413411,
+    "output_tokens": 1537,
+    "api_call_count": 11
+  }
+}
