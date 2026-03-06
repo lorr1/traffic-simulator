@@ -19,10 +19,12 @@ export class Renderer {
       throw new Error('Failed to get 2D rendering context');
     }
     this.ctx = ctx;
+    const roadHeight = DEFAULT_PARAMS.laneCount * LANE_WIDTH;
     this.camera = new Camera(
       canvas.width,
       canvas.height,
       DEFAULT_PARAMS.roadLengthMeters,
+      roadHeight,
     );
   }
 

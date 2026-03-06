@@ -9,10 +9,15 @@ export class Camera {
   private canvasHeight: number;
   private baseScale: number;
 
-  constructor(canvasWidth: number, canvasHeight: number, roadLength: number) {
+  constructor(canvasWidth: number, canvasHeight: number, roadLength: number, roadHeight: number = 11.1) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
-    this.baseScale = canvasWidth / roadLength;
+    // Fit road height to canvas with padding, so lanes are clearly visible
+    const cosT = Math.cos(this.tilt);
+    this.baseScale = (canvasHeight * 0.6) / (roadHeight * cosT);
+    // Center camera on the road midpoint
+    this.x = roadLength / 2;
+    this.y = roadHeight / 2;
   }
 
   worldToScreen(wx: number, wy: number): { x: number; y: number } {

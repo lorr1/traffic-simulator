@@ -111,13 +111,15 @@ describe('Camera', () => {
   it('resize updates canvas dimensions', () => {
     const camera = createCamera();
 
-    // Origin maps to center of canvas
-    const before = camera.worldToScreen(0, 0);
+    // Camera center maps to canvas center
+    const cx = camera.x;
+    const cy = camera.y;
+    const before = camera.worldToScreen(cx, cy);
     expect(before.x).toBeCloseTo(WIDTH / 2);
     expect(before.y).toBeCloseTo(HEIGHT / 2);
 
     camera.resize(1024, 768);
-    const after = camera.worldToScreen(0, 0);
+    const after = camera.worldToScreen(cx, cy);
     expect(after.x).toBeCloseTo(1024 / 2);
     expect(after.y).toBeCloseTo(768 / 2);
   });
