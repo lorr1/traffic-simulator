@@ -124,13 +124,21 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
     dragMoved.current = false;
   }, []);
 
-  const onWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault();
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = (e.clientX - rect.left) * devicePixelRatio;
-    const y = (e.clientY - rect.top) * devicePixelRatio;
-    rendererRef.current?.getCamera().handleZoom(-e.deltaY, x, y);
+  // Attach wheel listener as non-passive so preventDefault stops browser zoom
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handler = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * devicePixelRatio;
+      const y = (e.clientY - rect.top) * devicePixelRatio;
+      rendererRef.current?.getCamera().handleZoom(-e.deltaY, x, y);
+    };
+
+    canvas.addEventListener('wheel', handler, { passive: false });
+    return () => canvas.removeEventListener('wheel', handler);
   }, []);
 
   const handleCreateIncident = useCallback(
@@ -162,7 +170,6 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseLeave}
-        onWheel={onWheel}
       />
       {popover && (
         <IncidentPopover
