@@ -1,20 +1,18 @@
-import { useRef, useMemo, type ReactNode } from 'react';
-import { ResponsiveGridLayout, useContainerWidth } from 'react-grid-layout';
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
+import type { ReactNode } from 'react';
 
 interface PanelProps {
   title: string;
   children: ReactNode;
+  className?: string;
 }
 
-function Panel({ title, children }: PanelProps) {
+function Panel({ title, children, className = '' }: PanelProps) {
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden h-full flex flex-col">
-      <div className="drag-handle px-3 py-1.5 border-b border-gray-700 cursor-move text-xs font-semibold text-gray-400 uppercase tracking-wider select-none shrink-0">
+    <div className={`bg-gray-800 border border-gray-700 rounded-lg overflow-hidden flex flex-col ${className}`}>
+      <div className="px-3 py-1.5 border-b border-gray-700 text-xs font-semibold text-gray-400 uppercase tracking-wider shrink-0">
         {title}
       </div>
-      <div className="flex-1 overflow-hidden p-2">{children}</div>
+      <div className="flex-1 overflow-hidden p-2 min-h-0">{children}</div>
     </div>
   );
 }
@@ -27,30 +25,6 @@ interface DashboardLayoutProps {
   flowTimeSeries: ReactNode;
 }
 
-const LAYOUTS = {
-  lg: [
-    { i: 'canvas', x: 0, y: 0, w: 9, h: 8, minW: 4, minH: 4 },
-    { i: 'controls', x: 9, y: 0, w: 3, h: 8, minW: 2, minH: 4 },
-    { i: 'fundamental', x: 0, y: 8, w: 4, h: 6, minW: 3, minH: 4 },
-    { i: 'heatmap', x: 4, y: 8, w: 4, h: 6, minW: 3, minH: 4 },
-    { i: 'flow', x: 8, y: 8, w: 4, h: 6, minW: 3, minH: 4 },
-  ],
-  md: [
-    { i: 'canvas', x: 0, y: 0, w: 8, h: 8, minW: 4, minH: 4 },
-    { i: 'controls', x: 8, y: 0, w: 4, h: 8, minW: 2, minH: 4 },
-    { i: 'fundamental', x: 0, y: 8, w: 4, h: 6, minW: 3, minH: 4 },
-    { i: 'heatmap', x: 4, y: 8, w: 4, h: 6, minW: 3, minH: 4 },
-    { i: 'flow', x: 8, y: 8, w: 4, h: 6, minW: 3, minH: 4 },
-  ],
-  sm: [
-    { i: 'canvas', x: 0, y: 0, w: 6, h: 6, minW: 3, minH: 3 },
-    { i: 'controls', x: 0, y: 6, w: 6, h: 6, minW: 2, minH: 4 },
-    { i: 'fundamental', x: 0, y: 12, w: 6, h: 5, minW: 3, minH: 4 },
-    { i: 'heatmap', x: 0, y: 17, w: 6, h: 5, minW: 3, minH: 4 },
-    { i: 'flow', x: 0, y: 22, w: 6, h: 5, minW: 3, minH: 4 },
-  ],
-};
-
 export function DashboardLayout({
   canvas,
   controlPanel,
@@ -58,41 +32,22 @@ export function DashboardLayout({
   speedHeatmap,
   flowTimeSeries,
 }: DashboardLayoutProps) {
-  const layouts = useMemo(() => LAYOUTS, []);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const width = useContainerWidth(containerRef);
-
   return (
-    <div ref={containerRef}>
-      {width > 0 && (
-        <ResponsiveGridLayout
-          className="layout"
-          layouts={layouts}
-          width={width}
-          breakpoints={{ lg: 1200, md: 900, sm: 0 }}
-          cols={{ lg: 12, md: 12, sm: 6 }}
-          rowHeight={40}
-          draggableHandle=".drag-handle"
-          margin={[8, 8]}
-          containerPadding={[0, 0]}
-        >
-          <div key="canvas">
-            <Panel title="Simulation">{canvas}</Panel>
-          </div>
-          <div key="controls">
-            <Panel title="Parameters">{controlPanel}</Panel>
-          </div>
-          <div key="fundamental">
-            <Panel title="Fundamental Diagram">{fundamentalDiagram}</Panel>
-          </div>
-          <div key="heatmap">
-            <Panel title="Speed Heatmap">{speedHeatmap}</Panel>
-          </div>
-          <div key="flow">
-            <Panel title="Flow Time Series">{flowTimeSeries}</Panel>
-          </div>
-        </ResponsiveGridLayout>
-      )}
+    <div className="grid gap-2 h-[calc(100vh-56px)]" style={{
+      gridTemplateColumns: '1fr 280px',
+      gridTemplateRows: '1fr 280px',
+    }}>
+      <Panel title="Simulation" className="min-h-0">
+        {canvas}
+      </Panel>
+      <Panel title="Parameters" className="row-span-2 min-h-0">
+        {controlPanel}
+      </Panel>
+      <div className="grid grid-cols-3 gap-2 min-h-0">
+        <Panel title="Fundamental Diagram">{fundamentalDiagram}</Panel>
+        <Panel title="Speed Heatmap">{speedHeatmap}</Panel>
+        <Panel title="Flow Time Series">{flowTimeSeries}</Panel>
+      </div>
     </div>
   );
 }
