@@ -4,7 +4,7 @@ import { VehicleRenderer } from './VehicleRenderer';
 import { IncidentRenderer } from './IncidentRenderer';
 import type { Incident } from '../simulation/incidents/Incident';
 import type { OnRamp } from '../simulation/OnRamp';
-import type { SimulationState } from '../types';
+import type { SimulationParams, SimulationState } from '../types';
 import { DEFAULT_PARAMS } from '../constants';
 
 const LANE_WIDTH = 3.7; // meters
@@ -28,7 +28,12 @@ export class Renderer {
     );
   }
 
-  draw(state: SimulationState, incidents: Incident[] = [], onRamps: OnRamp[] = []): void {
+  draw(
+    state: SimulationState,
+    params: SimulationParams,
+    incidents: Incident[] = [],
+    onRamps: OnRamp[] = [],
+  ): void {
     const { width, height } = this.ctx.canvas;
 
     // 1. Clear canvas
@@ -43,8 +48,8 @@ export class Renderer {
     // 4. Draw road
     RoadRenderer.draw(
       this.ctx,
-      DEFAULT_PARAMS.roadLengthMeters,
-      DEFAULT_PARAMS.laneCount,
+      params.roadLengthMeters,
+      params.laneCount,
       LANE_WIDTH,
       onRamps,
     );
@@ -62,7 +67,7 @@ export class Renderer {
       this.ctx,
       state.vehicles,
       LANE_WIDTH,
-      DEFAULT_PARAMS.desiredSpeed,
+      params.desiredSpeed,
     );
 
     // 7. Restore state
