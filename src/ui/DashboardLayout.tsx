@@ -1,9 +1,7 @@
-import { useMemo, type ReactNode } from 'react';
-import { Responsive, WidthProvider } from 'react-grid-layout';
+import { useRef, useMemo, type ReactNode } from 'react';
+import { ResponsiveGridLayout, useContainerWidth } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-
-const ResponsiveGridLayout = WidthProvider(Responsive);
 
 interface PanelProps {
   title: string;
@@ -13,7 +11,7 @@ interface PanelProps {
 function Panel({ title, children }: PanelProps) {
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden h-full flex flex-col">
-      <div className="drag-handle px-3 py-1.5 bg-gray-750 border-b border-gray-700 cursor-move text-xs font-semibold text-gray-400 uppercase tracking-wider select-none shrink-0">
+      <div className="drag-handle px-3 py-1.5 border-b border-gray-700 cursor-move text-xs font-semibold text-gray-400 uppercase tracking-wider select-none shrink-0">
         {title}
       </div>
       <div className="flex-1 overflow-hidden p-2">{children}</div>
@@ -61,33 +59,40 @@ export function DashboardLayout({
   flowTimeSeries,
 }: DashboardLayoutProps) {
   const layouts = useMemo(() => LAYOUTS, []);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const width = useContainerWidth(containerRef);
 
   return (
-    <ResponsiveGridLayout
-      className="layout"
-      layouts={layouts}
-      breakpoints={{ lg: 1200, md: 900, sm: 0 }}
-      cols={{ lg: 12, md: 12, sm: 6 }}
-      rowHeight={40}
-      draggableHandle=".drag-handle"
-      margin={[8, 8]}
-      containerPadding={[0, 0]}
-    >
-      <div key="canvas">
-        <Panel title="Simulation">{canvas}</Panel>
-      </div>
-      <div key="controls">
-        <Panel title="Parameters">{controlPanel}</Panel>
-      </div>
-      <div key="fundamental">
-        <Panel title="Fundamental Diagram">{fundamentalDiagram}</Panel>
-      </div>
-      <div key="heatmap">
-        <Panel title="Speed Heatmap">{speedHeatmap}</Panel>
-      </div>
-      <div key="flow">
-        <Panel title="Flow Time Series">{flowTimeSeries}</Panel>
-      </div>
-    </ResponsiveGridLayout>
+    <div ref={containerRef}>
+      {width > 0 && (
+        <ResponsiveGridLayout
+          className="layout"
+          layouts={layouts}
+          width={width}
+          breakpoints={{ lg: 1200, md: 900, sm: 0 }}
+          cols={{ lg: 12, md: 12, sm: 6 }}
+          rowHeight={40}
+          draggableHandle=".drag-handle"
+          margin={[8, 8]}
+          containerPadding={[0, 0]}
+        >
+          <div key="canvas">
+            <Panel title="Simulation">{canvas}</Panel>
+          </div>
+          <div key="controls">
+            <Panel title="Parameters">{controlPanel}</Panel>
+          </div>
+          <div key="fundamental">
+            <Panel title="Fundamental Diagram">{fundamentalDiagram}</Panel>
+          </div>
+          <div key="heatmap">
+            <Panel title="Speed Heatmap">{speedHeatmap}</Panel>
+          </div>
+          <div key="flow">
+            <Panel title="Flow Time Series">{flowTimeSeries}</Panel>
+          </div>
+        </ResponsiveGridLayout>
+      )}
+    </div>
   );
 }
