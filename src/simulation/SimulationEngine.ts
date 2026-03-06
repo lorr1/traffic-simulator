@@ -214,6 +214,14 @@ export class SimulationEngine {
   }
 
   setParams(params: Partial<SimulationParams>): void {
+    const needsReset =
+      (params.laneCount !== undefined && params.laneCount !== this.params.laneCount) ||
+      (params.roadLengthMeters !== undefined && params.roadLengthMeters !== this.params.roadLengthMeters);
+
     this.params = { ...this.params, ...params };
+
+    if (needsReset) {
+      this.reset();
+    }
   }
 }
