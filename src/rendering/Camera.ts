@@ -85,4 +85,12 @@ export class Camera {
     this.canvasWidth = width;
     this.canvasHeight = height;
   }
+
+  fitToRoad(roadLength: number, roadHeight: number): void {
+    const cosT = Math.cos(this.tilt);
+    this.baseScale = (this.canvasHeight * 0.6) / (roadHeight * cosT);
+    this.x = roadLength / 2;
+    this.y = roadHeight / 2;
+    this.zoom = 1;
+  }
 }

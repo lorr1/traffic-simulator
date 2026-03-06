@@ -61,6 +61,17 @@ export function SimulationCanvas({ simulation }: SimulationCanvasProps) {
     return () => observer.disconnect();
   }, []);
 
+  // Re-fit camera when simulation resets (lane count or road length changed)
+  const prevParamsRef = useRef({ laneCount: engineRef.current.params.laneCount, roadLength: engineRef.current.params.roadLengthMeters });
+  useEffect(() => {
+    const params = engineRef.current.params;
+    const prev = prevParamsRef.current;
+    if (params.laneCount !== prev.laneCount || params.roadLengthMeters !== prev.roadLength) {
+      prevParamsRef.current = { laneCount: params.laneCount, roadLength: params.roadLengthMeters };
+      rendererRef.current?.fitToRoad(params.roadLengthMeters, params.laneCount);
+    }
+  }, [state]);
+
   // Draw on state change
   useEffect(() => {
     rendererRef.current?.draw(state, engineRef.current.params, getActiveIncidents(), engineRef.current.road.onRamps);

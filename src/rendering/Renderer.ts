@@ -77,4 +77,8 @@ export class Renderer {
   getCamera(): Camera {
     return this.camera;
   }
+
+  fitToRoad(roadLength: number, laneCount: number): void {
+    this.camera.fitToRoad(roadLength, laneCount * LANE_WIDTH);
+  }
 }
